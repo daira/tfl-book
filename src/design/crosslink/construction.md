@@ -47,7 +47,9 @@ Times are modelled as values of a totally ordered type $\Time$ with minimum valu
 ```admonish info "Remark"
 Although protocols may be nondeterministic, an execution fixes the events that occur and times at which they occur, for the purpose of modeling.
 
-For simplicity, we assume that all events occur at global times in a total ordering. This assumption is not realistic in an asynchronous communication model, but it is not essential to the design or analysis and could be removed: we could use a partial happens-before ordering on events in place of a total ordering on times.
+For simplicity, we assume that all events occur at global times in a total ordering. This assumption is not realistic in an asynchronous communication model, but it is not essential to the design or analysis and could be removed: we could use a partial happens‑before ordering on events in place of a total ordering on times.
+
+In any case, [[Clinger 1981](https://dspace.mit.edu/bitstream/handle/1721.1/6935/AITR-633.pdf), Chapter II] proves that a global time ordering must exist (non‑uniquely) for any such happens‑before ordering, as long as the “Laws for Communicating Parallel Processes” defined in [[Hewitt and Baker 1977]](https://dspace.mit.edu/bitstream/handle/1721.1/41962/AI_WP_134A.pdf) are satisfied (in other words, the protocol can be modelled as an actor system), which will be true in practice.
 ```
 
 <span style="white-space: nowrap">A “$\star$‑node”</span> is a participant in $\Pi_{\star}$ (the protocol may be implicit). <span style="white-space: nowrap">A $\star$‑node</span> is <span style="white-space: nowrap">“honest at time $t$”</span> in a given execution iff it has followed the protocol up to and including <span style="white-space: nowrap">time $t$</span> in that execution.
@@ -68,9 +70,9 @@ Our usage of “depth” is different from [[NTT2020]](https://eprint.iacr.org/2
 
 <span id="notation"></span>
 For <span style="white-space: nowrap">$\star$‑blocks $B$ and $C$:</span>
-* The notation $B \preceq_{\star} C$ means that the <span style="white-space: nowrap">$\star$‑chain</span> with <span style="white-space: nowrap">tip $B$</span> is a prefix of the one with <span style="white-space: nowrap">tip $C$.</span> This includes the <span style="white-space: nowrap">case $B = C$.</span>
-* The notation $B \agrees_{\star} C$ means that <span style="white-space: nowrap">either $B \preceq_{\star} C$ or $C \preceq_{\star} B$.</span> That is, <span style="white-space: nowrap">“one of $B$ and $C$</span> is a prefix of the other”. This also includes the <span style="white-space: nowrap">case $B = C$.</span>
-* The notation $B \conflicts_{\star} C$ means that <span style="white-space: nowrap">both $B \not\preceq_{\star} C$ and $C \not\preceq_{\star} B$.</span> That is, <span style="white-space: nowrap">“neither of $B$ and $C$</span> is a prefix of the other”.
+* The notation $B \preceq_{\star} C$ <span style="white-space: nowrap">(read as $B$ $\star$‑precedes $C$)</span> means that the <span style="white-space: nowrap">$\star$‑chain</span> with <span style="white-space: nowrap">tip $B$</span> is a prefix of the one with <span style="white-space: nowrap">tip $C$.</span> This includes the <span style="white-space: nowrap">case $B = C$.</span>
+* The notation $B \agrees_{\star} C$ <span style="white-space: nowrap">(read as $B$ $\star$‑agrees with $C$)</span> means that <span style="white-space: nowrap">either $B \preceq_{\star} C$ or $C \preceq_{\star} B$.</span> That is, <span style="white-space: nowrap">“one of $B$ and $C$</span> is a prefix of the other”. This also includes the <span style="white-space: nowrap">case $B = C$.</span>
+* The notation $B \conflicts_{\star} C$ <span style="white-space: nowrap">(read as $B$ $\star$‑conflicts with $C$)</span> means that <span style="white-space: nowrap">both $B \not\preceq_{\star} C$ and $C \not\preceq_{\star} B$.</span> That is, <span style="white-space: nowrap">“neither of $B$ and $C$</span> is a prefix of the other”.
 
 A function <span style="white-space: nowrap">$S \typecolon I \rightarrow \starblock$ is $\star$‑linear</span> iff <span style="white-space: nowrap">for every $t, u \typecolon I$ where $t \leq u$</span> we have <span style="white-space: nowrap">$S(t) \preceq_{\star} S(u)$.</span> (This definition can be applied to time series <span style="white-space: nowrap">where $I = \Time$,</span> or to sequences of $\star$‑blocks where values of $I$ are indices.)
 
