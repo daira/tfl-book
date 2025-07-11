@@ -16,7 +16,11 @@ Recall from the paper how $\LOG_{\fin,i}^t$ and $\LOG_{\da,i}^t$ are constructed
 
 > 3) *Ledger extraction:* Finally, how honest nodes compute $\LOG_{\fin,i}^t$ and $\LOG_{\da,i}^t$ from $\Ch_i^t$ and $\ch_i^t$ is illustrated in Figure 6. Recall that $\Ch_i^t$ is an ordering of snapshots, i.e., a chain of chains of LC blocks. First, $\Ch_i^t$ is flattened, i.e. the chains of blocks are concatenated as ordered to arrive at a single sequence of LC blocks. Then, all but the first occurrence of each block are removed (sanitized) to arrive at the finalized ledger $\LOG_{\fin,i}^t$ of LC blocks. To form the available ledger $\LOG_{\da,i}^t$, $\ch_i^t$, which is a sequence of LC blocks, is appended to $\LOG_{\fin,i}^t$ and the result again sanitized.
 
-This says that $\LOG_{\fin,i}^t$ and $\LOG_{\da,i}^t$ are sequences of transactions, *not* sequences of blocks. Therefore, [consensus rules defined at the block level](https://zips.z.cash/protocol/protocol.pdf#blockheader) are not applicable.
+The use of “sanitized” here to apply to a sequence of $\Pi_{\lc}$ blocks is imprecise, as is the reference to appending $\ch_i^t$ (a sequence of blocks) to $\LOG_{\fin,i}^t$ (a sequence of transactions). Sanitization is properly defined on the top-right of page 7 of [[NTT2020]](https://eprint.iacr.org/2020/1091.pdf) as taking only the first *valid* occurrence of a transaction in a sequence of *transactions*.
+
+The paper shows signs of it having been assumed at some point in the writing process that sanitization will only remove *duplicate* transactions, but that is not the case: for example it may remove a transaction because some of its inputs have been double-spent, or because it spends an output of a prior transaction that was removed (see [Effect on transaction ordering](#effect-on-transaction-ordering) below for further discussion).
+
+Thus, $\LOG_{\fin,i}^t$ and $\LOG_{\da,i}^t$ are sequences of transactions, *not* sequences of blocks — and they may contain only a subset of the transactions from any given $\Pi_{\lc}$ block. Therefore, [consensus rules defined at the block level](https://zips.z.cash/protocol/protocol.pdf#blockheader) are not applicable.
 
 ```admonish warning "Zcash-specific"
 
