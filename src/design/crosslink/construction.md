@@ -47,7 +47,9 @@ Times are modelled as values of a totally ordered type $\Time$ with minimum valu
 ```admonish info "Remark"
 Although protocols may be nondeterministic, an execution fixes the events that occur and times at which they occur, for the purpose of modeling.
 
-For simplicity, we assume that all events occur at global times in a total ordering. This assumption is not realistic in an asynchronous communication model, but it is not essential to the design or analysis and could be removed: we could use a partial happens-before ordering on events in place of a total ordering on times.
+For simplicity, we assume that all events occur at global times in a total ordering. This assumption is not realistic in an asynchronous communication model, but it is not essential to the design or analysis and could be removed: we could use a partial happens‑before ordering on events in place of a total ordering on times.
+
+In any case, [[Clinger 1981](https://dspace.mit.edu/bitstream/handle/1721.1/6935/AITR-633.pdf), Chapter II] proves that a global time ordering must exist (non‑uniquely) for any such happens‑before ordering, as long as the “Laws for Communicating Parallel Processes” defined in [[Hewitt and Baker 1977]](https://dspace.mit.edu/bitstream/handle/1721.1/41962/AI_WP_134A.pdf) are satisfied (in other words, the protocol can be modelled as an actor system), which will be true in practice.
 ```
 
 <span style="white-space: nowrap">A “$\star$‑node”</span> is a participant in $\Pi_{\star}$ (the protocol may be implicit). <span style="white-space: nowrap">A $\star$‑node</span> is <span style="white-space: nowrap">“honest at time $t$”</span> in a given execution iff it has followed the protocol up to and including <span style="white-space: nowrap">time $t$</span> in that execution.
