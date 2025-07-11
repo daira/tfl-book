@@ -48,7 +48,7 @@ That is, a transaction from one snapshot might double-spend an output already sp
 Since nullifiers for shielded spends are public, it is possible to do this even for shielded transactions. Each node $i$ will construct commitment trees in the order given by $\LOG_{\da,i}^t.$
 
 ```admonish info
-This means that if $\LOG_{\fin,i}$ is extended by a block that is not the next block in $\LOG_{\da,i}$ after the finalization point (and that has different note commitments), then *all* shielded transactions from that point onward in the previous $\LOG_{\da,i}$ will be invalidated. It could be possible to do better at the expense of a more complicated note commitment tree structure. In any case, this situation is expected to be rare, because it can only occur if there is a rollback of more than $\sigma$ blocks in the $\Pi_{\lc}$ consensus chain or a failure of BFT safety.
+This means that if $\LOG_{\fin,i}$ is extended by a block that is not the next block in $\LOG_{\da,i}$ after the finalization point (and that has different note commitments), then *all* shielded transactions from that point onward in the previous $\LOG_{\da,i}$ will be invalidated. It could be possible to do better at the expense of a more complicated note commitment tree structure. This situation is expected to be rare, because it can only occur if there is a rollback of more than $\sigma$ blocks in the $\Pi_{\lc}$ consensus chain or a failure of BFT safety. However, it is clear from this that the design of Snap‑and‑Chat is making implicit assumptions derived from transparent Bitcoin-like blockchains.
 ```
 
 ### Subtlety in the definition of sanitization
@@ -225,4 +225,4 @@ Now consider this statement and figure:
 >
 > ![Figure 9 of [NTT2020]](./NTT2020-Figure-9.png)
 
-This argument is technically correct but has to be interpreted with care. It only applies when the number of malicious nodes $f$ is such that $n/3 < f < n/2$. What we are trying to do with Crosslink is to ensure that a similar conclusion holds even if $\Pi_{\bft}$ is completely subverted, i.e. the adversary has 100% of validators (but only < 50% of $\Pi_{\lc}$ hash rate).
+This argument is technically correct but has to be interpreted with care. It only applies when the number of malicious nodes $f$ is such that $n/3 < f < n/2$. Here it is assumed that the same nodes are participating in the BFT and LC protocols, so that the proportion of malicious nodes $f/n$ is the same in both. What we are trying to do with Crosslink is to ensure that a similar conclusion holds even if $\Pi_{\bft}$ is completely subverted, i.e. the adversary has 100% of validators (but only < 50% of $\Pi_{\lc}$ hash rate).
