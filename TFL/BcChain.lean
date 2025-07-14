@@ -52,7 +52,7 @@ public def bc_trim (c : BcChain) (k : ℕ) : BcChain := c.drop k
 local infix:60 "⎾" => bc_trim
 
 public def bc_rep_suffix (a b : BcChain) : Bool := a.isSuffixOf b
---public def bc_rep_suffix (a b : BcChain) : Bool := a <:+ b
+--public def bc_rep_suffix (a b : BcChain) := a <:+ b
 
 /--
 Since chains are represented tip-first, `a ≼ b` if the `List` representing `a` is
@@ -65,12 +65,6 @@ public def bc_prefix (_nc : NoCollisions) (a b : BcChain) : Bool := bc_rep_suffi
 
 /-- Local notation for bc-chain prefix, making the dependency on `NC` implicit. -/
 local infix:50 "≼" => bc_prefix NC
-
-lemma bc_rep_suffix_trans {a b c : BcChain} (a_suff_b : bc_rep_suffix a b) (b_suff_c : bc_rep_suffix b c)
-    : bc_rep_suffix a c := by
-  simp_all [bc_rep_suffix]
-  first | exact List_isSuffixOf_trans a_suff_b b_suff_c
-        | exact List.IsSuffix.trans a_suff_b b_suff_c
 
 /-- There is a preorder on `BcChain`s assuming no hash collisions. -/
 public instance bc_chain_preorder : Preorder BcChain where
@@ -98,7 +92,7 @@ public def bc_conflicts (a b : BcChain) := ¬(a ≼≽ b)
 local infix:50 "≼/≽" => bc_conflicts NC
 
 /-- If a ≼ c ∧ b ≼ c then a ≼≽ b. -/
-public def linear_prefix (a b c : BcChain) (hac : a ≼ c) (hbc : b ≼ c) : a ≼≽ b := by
+public lemma linear_prefix (a b c : BcChain) (hac : a ≼ c) (hbc : b ≼ c) : a ≼≽ b := by
   simp_all [bc_agrees, bc_prefix, bc_rep_suffix]
   cases hbc with
   | inl hbc_pr => cases hac with
