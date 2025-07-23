@@ -36,12 +36,6 @@ public def bc_same_tip (a b : BcChain) : Bool := bc_tip a == bc_tip b
 /-- Collision-freedom of the block hash means that two bc-chains with the same tip hash are the same. -/
 public def NoCollisions := (a b : BcChain) → (same : bc_same_tip a b) → a = b
 
-/-
-Effectively assume that we are using a collision-free hash, by requiring a
-proof of that as an argument to anything in this file that needs it.
--/
-variable (NC : NoCollisions)
-
 /--
 Trim the most recent `k` blocks.
 
@@ -52,54 +46,51 @@ public def bc_trim (c : BcChain) (k : ℕ) : BcChain := c.drop k
 local infix:60 "⎾" => bc_trim
 
 public def bc_rep_suffix (a b : BcChain) : Bool := a.isSuffixOf b
---public def bc_rep_suffix (a b : BcChain) := a <:+ b
 
 /--
 Since chains are represented tip-first, `a ≼ b` if the `List` representing `a` is
-a suffix of the `List` representing `b`. Since the hash is collision-free, we may
-also assume `a ≼ b` if their initial elements are equal. Taking a proof of
-`NoCollisions` as an argument tracks where we are depending on this.
+a suffix of the `List` representing `b`.
 -/
-public def bc_prefix (_nc : NoCollisions) (a b : BcChain) : Bool := bc_rep_suffix a b || bc_same_tip a b
---public def bc_prefix (_nc : NoCollisions) (a b : BcChain) := bc_rep_suffix a b ∨ bc_same_tip a b
+public def bc_prefix (a b : BcChain) : Bool := bc_rep_suffix a b
 
-/-- Local notation for bc-chain prefix, making the dependency on `NC` implicit. -/
-local infix:50 "≼" => bc_prefix NC
+/-- Local notation for bc-chain prefix. -/
+local infix:50 "≼" => bc_prefix
 
-/-- There is a preorder on `BcChain`s assuming no hash collisions. -/
+/-- There is a preorder on `BcChain`s. -/
 public instance bc_chain_preorder : Preorder BcChain where
   le (a b : BcChain) := a ≼ b
   le_refl := by intro a; simp [bc_prefix, bc_rep_suffix]
   le_trans := by
     intro a b c hab hbc
     simp_all [bc_prefix, bc_rep_suffix]
-    cases hbc with
-    | inl hbc_tr => cases hab with
-                    | inl hab_tr => simp [List.IsSuffix.trans hab_tr hbc_tr]
-                    | inr hab_eq => simp_all [NC a b hab_eq]
-    | inr hbc_eq => simp_all [NC b c hbc_eq]
+    simp [List.IsSuffix.trans hab hbc]
+
+/--
+Since the hash is collision-free, we may also assume `a ≼ b` if their initial
+elements are equal.
+-/
+public lemma same_tip_implies_prefix (nc : NoCollisions) (a b : BcChain)
+    (same_tip : bc_same_tip a b) : a ≼ b := by
+  apply nc at same_tip
+  subst same_tip
+  simp [bc_prefix, bc_rep_suffix]
 
 /-- Two bc-chains agree iff one is a prefix of the other. -/
 public def bc_agrees (a b : BcChain) := a ≼ b ∨ b ≼ a
 
-/-- Local notation for bc-chain agreement, making the dependency on `NC` implicit. -/
-local infix:50 "≼≽" => bc_agrees NC
+/-- Local notation for bc-chain agreement. -/
+local infix:50 "≼≽" => bc_agrees
 
 /-- Two bc-chains conflict iff neither is a prefix of the other. -/
 public def bc_conflicts (a b : BcChain) := ¬(a ≼≽ b)
 
-/-- Local notation for bc-chain conflict, making the dependency on `NC` implicit. -/
-local infix:50 "≼/≽" => bc_conflicts NC
+/-- Local notation for bc-chain conflict. -/
+local infix:50 "≼/≽" => bc_conflicts
 
 /-- If a ≼ c ∧ b ≼ c then a ≼≽ b. -/
 public lemma linear_prefix (a b c : BcChain) (hac : a ≼ c) (hbc : b ≼ c) : a ≼≽ b := by
   simp_all [bc_agrees, bc_prefix, bc_rep_suffix]
-  cases hbc with
-  | inl hbc_pr => cases hac with
-                  | inl hac_pr => cases List.suffix_or_suffix_of_suffix hac_pr hbc_pr with
-                                  | inl | inr => simp_all only [true_or, or_true]
-                  | inr hac_eq => simp_all only [true_or, or_true, NC a c <| show bc_same_tip a c by simp_all only]
-  | inr hbc_eq => simp_all only [true_or, NC b c <| show bc_same_tip b c by simp_all only]
+  exact List.suffix_or_suffix_of_suffix hac hbc
 
 /--
 An execution of Π_bc has Agreement on the view `V : Node → Time → BcChain` iff
@@ -118,14 +109,14 @@ An execution of Π_bc has Agreement on the view `V : Node × Time → U` compose
 TODO: this definition works for any chain type; generalize it.
 -/
 public def ComposedBcAgreement {U : Type} (V : Node → Time → U) (f : U → BcChain) :=
-  BcAgreement NC (fun i t => f (V i t))
+  BcAgreement (fun i t => f (V i t))
 
 /--
 An execution of Π_bc has Prefix Agreement at confirmation depth `μ` iff it has
 Agreement on the view `i ↦ t ↦ ch i t ⎾ μ`.
 -/
 public def BcPrefixAgreement (μ : ℕ) (ch : Node → Time → BcChain) :=
-  ComposedBcAgreement NC ch (· ⎾ μ)
+  ComposedBcAgreement ch (· ⎾ μ)
 
 /--
 An execution of `Π_bc` has Prefix Consistency at confirmation depth `μ`, iff
@@ -145,4 +136,4 @@ public def up_to (f : Time → BcChain) (t : Time) := {r : Time | r ≤ t}.restr
 `BcLinear f t` specifies that a time series of bc-blocks given by `f : Time → BcChain`
 is bc-linear up to time `t` inclusive.
 -/
-public def BcLinear (f : Time → BcChain) (t : Time) := @Monotone _ _ _ (bc_chain_preorder NC) (up_to f t)
+public def BcLinear (f : Time → BcChain) (t : Time) := @Monotone _ _ _ bc_chain_preorder (up_to f t)
