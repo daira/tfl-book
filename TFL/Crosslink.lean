@@ -15,6 +15,7 @@ proof of that as an argument to anything in this file that needs it.
 -/
 variable (NC : NoCollisions)
 
+/- In this file we want to be explicit about which chain we're talking about. -/
 local infix:60 "⎾_bc" => bc_trim
 local infix:50 "≼_bc" => bc_prefix NC
 local infix:50 "≼≽_bc" => bc_agrees NC
@@ -27,8 +28,12 @@ local infix:50 "≼/≽_bft" => bft_conflicts
 
 /-- The parameters for an instance of Crosslink 2. -/
 structure Crosslink where
+  /-- The bc‑confirmation‑depth. -/
   σ : ℕ+
+  /-- The finalization gap bound. -/
   L : ℕ+
+  /-- "In practice, `L` should be *at least* `2σ`." -/
+  L_constraint : L ≥ 2*σ
 
 /-- The Last Final bft-block for a given bc-block. -/
 def LF (params : Crosslink) (c : BcChain) : BftChain :=
@@ -40,14 +45,24 @@ def snapshot (params : Crosslink) (b : BftChain) : BcChain :=
   | some B => B.headers_bc ⎾_bc params.σ
   | none => []
 
+/--
+The candidate bc-chain to update the finalization point to, given that the
+bc-tip is at `H`. On each node the finalization point is subject to a local
+ratchet that only allows it to move forward. This may cause the candidate to
+be ignored (which should happen only rarely under certain difficult attacks).
+-/
 def candidate (params : Crosslink) (H : BcChain) : BcChain :=
   last_common_ancestor (snapshot params (LF params H)) (H ⎾_bc params.σ)
 
+/-- Apply `update` to `initial` a specified number of times. -/
 def scan {A : Type} (update : ℕ → A → A) (initial : A) : ℕ → A
   | 0 => initial
   | s+1 => update (s+1) (scan update initial s)
 
-/- This is too hard to prove anything about currently. -/
+/--
+Equivalent to `scan`. This could be more efficient than `scan`, but is too hard
+to prove anything about currently.
+-/
 def scan_iterative {A : Type} (update : ℕ → A → A) (initial : A) (t : ℕ) : A := Id.run do
   let mut state : A := initial
   for s in [0:t] do state ← update (s+1) state

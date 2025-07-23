@@ -61,7 +61,7 @@ def bft_last_final (b : BftChain) : BftChain :=
   b -- FIXME
 
 /--
-An execution of `Π_bft` has Agreement on the view `V : Node → Time → BcChain` iff
+An execution of `Π_bft` has Agreement on the view `V : Node → Time → BftChain` iff
 for all times `t`, `u` and all bft-nodes `i`, `j` (potentially the same) such that
 `i` is honest at time `t` and `j` is honest at time `u`, we have `V i t ≼≽ V j u`.
 
