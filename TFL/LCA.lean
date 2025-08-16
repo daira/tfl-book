@@ -10,7 +10,7 @@ local infix:50 "≼" => bc_prefix
 def lca_same_length (nc : NoCollisions) (as bs : BcChain) (len : ℕ) (ha : len = as.length) (hb : len = bs.length) : BcChain :=
   if len_z : len = 0 then [] else
     match h : (as, bs) with
-    | (a::ar, b::br) => if a = b then ar else lca_same_length nc ar br (len-1) (by simp_all) (by simp_all)
+    | (a::ar, b::br) => if a = b then a::ar else lca_same_length nc ar br (len-1) (by simp_all) (by simp_all)
     | (_, []) => by simp [hb] at len_z; simp_all -- can't happen
     | ([], _) => by simp [ha] at len_z; simp_all -- can't happen
 
