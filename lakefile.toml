@@ -2,7 +2,7 @@ name = "TFL"
 version = "0.1.0"
 description = "A formalization of the Crosslink 2 hybrid consensus protocol."
 keywords = ["math", "cryptography", "proof-of-work", "consensus"]
-homepage = "https://github.com/Electric-Coin-Company/tfl-book"
+homepage = "https://github.com/daira/tfl-book"
 license = "MIT"
 defaultTargets = ["TFL"]
 

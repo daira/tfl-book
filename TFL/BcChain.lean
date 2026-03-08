@@ -95,7 +95,7 @@ public lemma linear_prefix (a b c : BcChain) (hac : a ≼ c) (hbc : b ≼ c) : a
 /--
 An execution of Π_bc has Agreement on the view `V : Node → Time → BcChain` iff
 for all times `t`, `u` and all Π-nodes `i`, `j` (potentially the same) such that
-`i` is honest at time `t` and `j` is honest at time `u`, we have `V i t ≤≥ V j u`.
+`i` is honest at time `t` and `j` is honest at time `u`, we have `V i t ≼≽ V j u`.
 
 TODO: this definition works for any chain type; generalize it.
 -/

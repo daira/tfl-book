@@ -36,7 +36,7 @@ a suffix of the `List` representing `b`.
 -/
 public def bft_prefix (a b : BftChain) := a <:+ b
 
-/-- Local notation for bft-chain prefix, making the dependency on `NC` implicit. -/
+/-- Local notation for bft-chain prefix. -/
 local infix:50 "≼" => bft_prefix
 
 /-- There is a preorder on `BftChain`s. -/
